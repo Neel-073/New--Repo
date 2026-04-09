@@ -1,0 +1,356 @@
+Railway Reservation System
+
+Objective
+To design and implement a C-based Railway Reservation System that simulates the basic operations of a real-world railway booking system. The program should manage train schedules, passenger information, seat allocation, and ticket status using appropriate data structures and control logic.
+
+Problem Description
+The Railway Reservation System is a console-based simulation program written in C language that allows users to perform railway ticket booking–related operations. The system maintains records of trains and passengers, checks seat availability, allocates seats upon successful booking, and updates ticket status accordingly.
+
+The Railway Reservation System will be implemented as a menu-driven, console-based C program that simulates basic railway booking operations.
+The system will use structures to model real-world entities such as trains and passengers, arrays to store multiple records, and functions to modularize operations like booking, cancellation, and display.
+
+The program will run continuously using a loop until the user explicitly chooses to exit.
+
+Key Entities and Data Modeling
+1 Train Information Structure
+Each train must store fixed and dynamic data.
+Train Structure Fields:
+Train Number (unique identifier)
+Train Name
+Source Station
+Destination Station
+Total Seats
+Available Seats
+
+Purpose:
+Used to display schedules
+Used to check seat availability during booking
+Updated during booking and cancellation
+
+2 Passenger Information Structure
+Passenger data represents a booking transaction.
+Passenger Structure Fields:
+Passenger Name
+Age
+Gender
+Train Number (linked to train)
+Seat Number
+Ticket Status
+Confirmed
+Waiting
+Canceled
+
+Purpose:
+Track booking details
+Display ticket status
+Manage cancellation and seat reallocation
+
+3 Data Storage Strategy
+3.1 Arrays + File Backup
+Use an array of Train structures for runtime operations
+Use an array of Passenger structures for runtime bookings
+
+Maintain counters:
+Number of trains stored
+Number of passengers stored
+
+Enhancement:
+After every operation that modifies data (add train, book ticket, cancel ticket):
+Update the corresponding file (trains.dat / passengers.dat)
+
+At program startup:
+Load data from files into arrays
+Initialize counters based on file content
+
+Benefit:
+No data loss after program exit; arrays still provide fast runtime access.
+
+4. Functional Decomposition
+The system will be divided into logical functions, each responsible for one task.
+4.1 Main Menu Function
+Displays options such as:
+Display Available Trains
+Book Ticket
+Cancel Ticket
+Display Passenger Details
+Exit
+
+Uses a while loop and switch statement to handle user choices.
+
+4.2 Display Available Trains
+Responsibilities:
+Iterate through the train array
+Display:
+Train Number
+Train Name
+Source → Destination
+Available Seats
+
+Validation:
+If no trains exist, show an appropriate message
+
+4.3 Ticket Booking Logic
+Steps:
+Ask user for train number
+Validate train existence
+Check available seats
+Collect passenger details
+Allocate seat automatically
+Seat Allocation Strategy:
+If availableSeats > 0
+Assign next seat number
+Mark status as Confirmed
+Decrease available seats
+Else
+Seat number = -1
+Status = Waiting
+Prevent overbooking
+
+Key Constraints:
+No booking beyond total seats
+Automatic seat assignment only
+Clear user feedback on booking status
+
+4.4 Ticket Cancellation Logic
+Steps:
+Ask for passenger name or booking reference
+Validate passenger record
+Check ticket status
+If status is Confirmed:
+Increase available seats
+Update status to Canceled
+If status is Waiting:
+Simply mark as Canceled
+
+Optional Enhancement (Not Mandatory):
+Promote waiting passenger to confirmed if seat becomes free
+
+4.5 Display Passenger and Ticket Details
+Responsibilities:
+Traverse passenger array
+Display:
+Passenger name
+Train number
+Seat number (if confirmed)
+Ticket status
+
+Validation:
+Handle empty passenger list
+Clearly show canceled tickets
+
+5. Ticket Status Management
+Ticket status is managed using:
+Strings ("Confirmed", "Waiting", "Canceled")
+OR enumerations for cleaner logic
+
+Rules:
+No confirmed ticket without seat
+Waiting tickets do not reduce available seats
+Canceled tickets free seats only if previously confirmed
+
+6. Input Validation and Error Handling
+
+The program must:
+Validate menu choices
+Validate train numbers
+Prevent invalid age or gender entries
+Display meaningful error messages for:
+Invalid train selection
+Booking when no seats are available
+Canceling non-existent tickets
+
+This improves robustness and user experience.
+
+7. Program Flow Control
+The program runs inside a do-while or while(1) loop
+User exits only when choosing the exit option
+All operations return control back to the main menu
+
+
+Coding guidelines :
+Use function pointers, enums, dynamic memory allocation where required.
+
+1. Program Structure & Organization
+1.1 Use Clear File Structure
+Keep all structure definitions at the top
+Declare constants and macros before main()
+Write function prototypes before main()
+Implement functions after main()
+
+Why:
+Improves readability and avoids implicit declaration errors.
+
+1.2 Follow Modular Programming
+One function = one responsibility
+Example:
+displayTrains()
+bookTicket()
+cancelTicket()
+displayPassengers()
+
+Rule:
+❌ Avoid writing all logic inside main()
+
+2. Naming Conventions (Very Important)
+2.1 Use Meaningful Names
+
+Variables: availableSeats, trainCount
+Functions: bookTicket(), not func1()
+Structures: Train, Passenger
+
+Avoid:
+int x, y, z;
+
+Prefer:
+int trainIndex, seatNumber;
+
+2.2 Consistent Naming Style
+Choose one style and stick to it:
+camelCase → availableSeats
+OR snake_case → available_seats
+Do NOT mix styles
+
+3. Use Constants Instead of Magic Numbers
+3.1 Define Limits Using Macros
+#define MAX_TRAINS 10
+#define MAX_PASSENGERS 100
+
+Avoid:
+Train trains[10];
+Passenger passengers[100];
+
+Why:
+Easy to modify and self-explanatory.
+
+4. Structure Design Rules
+4.1 Keep Structures Focused
+Do NOT overload a structure with unrelated data
+Train structure should not contain passenger details
+
+✔ Good separation:
+struct Train { ... };
+struct Passenger { ... };
+
+4.2 Use Enum for Ticket Status (Recommended)
+enum TicketStatus {
+    CONFIRMED,
+    WAITING,
+    CANCELED
+};
+
+Why:
+Prevents spelling mistakes
+Makes comparisons faster and safer
+
+5. Input Handling Guidelines
+5.1 Validate Every User Input
+
+Always check:
+Menu choice range
+
+Train number existence
+Age > 0
+
+Seats availability
+
+Rule:
+Never assume user input is correct.
+
+5.2 Avoid Buffer Overflow
+Limit string input size
+Use fgets() instead of unsafe input methods when possible
+
+Example:
+fgets(passenger.name, sizeof(passenger.name), stdin);
+
+6. Booking Logic Rules
+6.1 Prevent Overbooking
+
+Confirm ticket only if availableSeats > 0
+Waiting tickets must not reduce seat count
+
+Golden Rule:
+Seat count must never go below zero.
+
+6.2 Automatic Seat Allocation
+Assign seats sequentially
+
+Never allow duplicate seat numbers for the same train
+
+7. Cancellation Rules
+7.1 Status-Based Cancellation
+
+Only confirmed tickets restore seats
+Waiting tickets do not affect seat count
+
+Example Logic:
+if (ticketStatus == CONFIRMED)
+    availableSeats++;
+
+7.2 Do Not Delete Passenger Records
+Mark status as CANCELED
+Keep record for history and display
+
+8. Control Flow & Menu Handling
+8.1 Use switch-case for Menu
+Cleaner and easier to extend:
+switch(choice) {
+    case 1: displayTrains(); break;
+    case 2: bookTicket(); break;
+    ...
+}
+
+8.2 Loop Until Exit
+Use:
+do {
+   showMenu();
+} while(choice != EXIT);
+
+Avoid:
+Using goto
+
+9. Commenting Guidelines
+9.1 Comment Logical Blocks
+Structure definition
+Booking logic
+Seat allocation
+Cancellation logic
+Avoid obvious comments:
+i++; // increment i
+
+9.2 Use Function Header Comments
+/*
+ * Function: bookTicket
+ * Purpose : Books a ticket and allocates seat
+ */
+
+10. Error Handling & Messages
+10.1 User-Friendly Messages
+Always print clear messages:
+"Invalid train number"
+"No seats available"
+"Ticket successfully canceled"
+
+Avoid cryptic outputs like:
+printf("Error");
+
+11. Avoid Common C Mistakes
+❌ Using global variables unnecessarily
+❌ Hardcoding values
+❌ Deep nested if-else blocks
+❌ Ignoring return values
+❌ Mixing logic and display code
+
+12. Code Readability Rules
+Use proper indentation
+One statement per line
+Blank lines between logical blocks
+Limit line length (80 characters)
+
+13. Testing Guidelines
+Make sure you maintain logs using printf for easy debugging of your program.
+Before final submission:
+Test booking until seats are full
+Test cancellation
+Test invalid inputs
+Test waiting list scenario
