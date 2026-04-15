@@ -1,0 +1,6 @@
+[submodule "my_code/lib"]
+	path = my_code/lib
+	url = https://github.com/Neel-073/Submodule--repo.git
+[submodule "lib"]
+	path = lib
+	url = https://github.com/Neel-073/Submodule--repo.git
